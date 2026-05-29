@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>家庭记账 Java 版</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <aside class="sidebar">
+      <h1>家庭账本</h1>
+      <button data-view="dashboard" class="active">总览</button>
+      <button data-view="entry">记一笔</button>
+      <button data-view="transactions">账目</button>
+      <button data-view="reconcile">核算</button>
+    </aside>
+    <main>
+      <section id="dashboard" class="view active">
+        <header>
+          <div>
+            <h2>总览</h2>
+            <p>由 Java 后端实时计算本月收支和账户余额。</p>
+          </div>
+          <select id="monthInput">
+            <option value="2026-05">2026-05</option>
+            <option value="2026-04">2026-04</option>
+            <option value="2026-03">2026-03</option>
+          </select>
+        </header>
+        <div class="metrics">
+          <article><span>本月收入</span><strong id="income">¥0.00</strong></article>
+          <article><span>本月支出</span><strong id="expense">¥0.00</strong></article>
+          <article><span>本月结余</span><strong id="balance">¥0.00</strong></article>
+          <article><span>总资产</span><strong id="totalAsset">¥0.00</strong></article>
+        </div>
+        <div class="panel">
+          <h3>账户余额</h3>
+          <div id="accountCards" class="cards"></div>
+        </div>
+      </section>
+
+      <section id="entry" class="view">
+        <header>
+          <div>
+            <h2>记一笔</h2>
+            <p>支持手动录入，也支持语音文本经大模型 JSON 读取后确认提交。</p>
+          </div>
+        </header>
+        <div class="grid">
+          <form id="entryForm" class="panel">
+            <div class="segments">
+              <button type="button" data-type="EXPENSE" class="active">支出</button>
+              <button type="button" data-type="INCOME">收入</button>
+              <button type="button" data-type="TRANSFER">转账</button>
+              <button type="button" data-type="ADJUST">调账</button>
+            </div>
+            <input id="type" type="hidden" value="EXPENSE" />
+            <label>金额<input id="amount" type="number" step="0.01" required /></label>
+            <label>日期<input id="date" type="date" required /></label>
+            <label>账户<select id="accountId"></select></label>
+            <label id="targetWrap">转入账户<select id="targetAccountId"></select></label>
+            <label id="categoryWrap">分类<select id="categoryId"></select></label>
+            <label>备注<input id="note" /></label>
+            <button class="primary" type="submit">保存账目</button>
+          </form>
+
+          <section class="panel">
+            <h3>语音记账</h3>
+            <p class="hint">正式版本可使用浏览器或移动端本地语音识别。这里用文本模拟转写结果。</p>
+            <textarea id="voiceText" rows="3" placeholder="例如：昨天用微信买菜花了 68.5，备注晚饭食材"></textarea>
+            <div class="actions">
+              <button id="sampleVoice">模拟语音</button>
+              <button id="parseVoice" class="primary">生成模型 JSON</button>
+              <button id="copyPrompt">复制 Prompt</button>
+            </div>
+            <details>
+              <summary>固定 Prompt</summary>
+              <textarea id="prompt" rows="8" readonly></textarea>
+            </details>
+            <label>模型返回 JSON<textarea id="modelJson" rows="8"></textarea></label>
+            <button id="applyJson" class="primary">读取 JSON 到表单</button>
+            <pre id="aiResult">等待语音内容...</pre>
+          </section>
+        </div>
+      </section>
+
+      <section id="transactions" class="view">
+        <header>
+          <div>
+            <h2>账目</h2>
+            <p>从 Java API 查询，删除为软删除。</p>
+          </div>
+        </header>
+        <div class="panel filters">
+          <input id="keyword" placeholder="搜索备注、分类、账户" />
+          <select id="filterType">
+            <option value="">全部类型</option>
+            <option value="EXPENSE">支出</option>
+            <option value="INCOME">收入</option>
+            <option value="TRANSFER">转账</option>
+            <option value="ADJUST">调账</option>
+          </select>
+          <button id="searchBtn">查询</button>
+        </div>
+        <div class="panel table-wrap">
+          <table>
+            <thead>
+              <tr><th>日期</th><th>类型</th><th>金额</th><th>账户</th><th>分类</th><th>备注</th><th>操作</th></tr>
+            </thead>
+            <tbody id="transactionRows"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="reconcile" class="view">
+        <header>
+          <div>
+            <h2>核算</h2>
+            <p>按初始余额与有效流水实时重算。</p>
+          </div>
+        </header>
+        <div id="reconcileCards" class="cards"></div>
+      </section>
+    </main>
+    <div id="toast" class="toast"></div>
+    <script src="./app.js"></script>
+  </body>
+</html>
