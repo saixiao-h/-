@@ -32,5 +32,6 @@ public final class LedgerApplication {
 
         //输出链接
         System.out.println("家庭记账系统已启动：http://localhost:" + port);
+        System.out.println("家庭记账系统已启动：http://localhost:" + port);
     }
 }
