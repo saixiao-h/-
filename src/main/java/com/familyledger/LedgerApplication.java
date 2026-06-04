@@ -29,6 +29,8 @@ public final class LedgerApplication {
         server.setExecutor(Executors.newFixedThreadPool(8));
         server.start();
 
+
+        //输出链接
         System.out.println("家庭记账系统已启动：http://localhost:" + port);
     }
 }
